@@ -38,7 +38,7 @@ class EMongoDB extends CApplicationComponent
 	public $replicaSet = null;
 
 	/**
-	 * @var int timeout For how long the driver should try to connect to the database (in milliseconds).
+	 * @var integer timeout For how long the driver should try to connect to the database (in milliseconds).
 	 * @example 2000
 	 * @since v1.3.7
 	 */
@@ -53,24 +53,24 @@ class EMongoDB extends CApplicationComponent
 	public $autoConnect = true;
 
 	/**
-	 * @var false|string $persistentConnection false for non-persistent connection, string for persistent connection id to use
+	 * @var mixed $persistentConnection False for non-persistent connection, string for persistent connection id to use.
 	 * @since v1.0
 	 */
 	public $persistentConnection = false;
 
 	/**
-	 * @var string $dbName name of the Mongo database to use
+	 * @var string $dbName name of the Mongo database to use.
 	 * @since v1.0
 	 */
 	public $dbName = null;
 
 	/**
-	 * @var MongoDB $_mongoDb instance of MongoDB driver
+	 * @var MongoDB $_mongoDb instance of MongoDB driver.
 	 */
 	private $_mongoDb;
 
 	/**
-	 * @var Mongo $_mongoConnection instance of MongoDB driver
+	 * @var Mongo $_mongoConnection instance of MongoDB driver.
 	 */
 	private $_mongoConnection;
 
@@ -108,19 +108,19 @@ class EMongoDB extends CApplicationComponent
 	 * Note: {@see EMongoCursor} does not implement ArrayAccess interface and cannot be used like an array,
 	 * because offset access to cursor is highly ineffective and pointless.
 	 *
-	 * @var boolean $useCursor state of Use Cursor flag (global scope)
+	 * @var boolean $useCursor state of Use Cursor flag (global scope).
 	 */
 	public $useCursor = false;
 
 	/**
 	 * Storage location for temporary files used by the GridFS Feature.
-	 * If set to null, component will not use temporary storage
+	 * If set to null, component will not use temporary storage.
 	 * @var string $gridFStemporaryFolder
 	 */
 	public $gridFStemporaryFolder = null;
 
 	/**
-	 * Connect to DB if connection is already connected this method does nothing
+	 * Connect to DB. If already connected do nothing.
 	 * @since v1.0
 	 */
 	public function connect()
@@ -130,8 +130,7 @@ class EMongoDB extends CApplicationComponent
 	}
 
 	/**
-	 * Returns Mongo connection instance if not exists will create new
-	 *
+	 * Returns Mongo connection instance if not exists will create new.
 	 * @return Mongo
 	 * @throws EMongoException
 	 * @since v1.0
@@ -173,8 +172,7 @@ class EMongoDB extends CApplicationComponent
 	}
 
 	/**
-	 * Set the connection
-	 *
+	 * Set the connection.
 	 * @param Mongo $connection
 	 * @since v1.0
 	 */
@@ -184,7 +182,7 @@ class EMongoDB extends CApplicationComponent
 	}
 
 	/**
-	 * Get MongoDB instance
+	 * Get MongoDB instance.
 	 * @since v1.0
 	 */
 	public function getDbInstance()
@@ -196,8 +194,7 @@ class EMongoDB extends CApplicationComponent
 	}
 
 	/**
-	 * Set MongoDB instance
-	 * Enter description here ...
+	 * Set MongoDB instance.
 	 * @param string $name
 	 * @since v1.0
 	 */
@@ -211,8 +208,10 @@ class EMongoDB extends CApplicationComponent
 	 * It does nothing if the connection is already closed.
 	 * @since v1.0
 	 */
-	protected function close(){
-		if($this->_mongoConnection!==null){
+	protected function close()
+	{
+		if($this->_mongoConnection!==null)
+		{
 			$this->_mongoConnection->close();
 			$this->_mongoConnection=null;
 			Yii::trace('Closing MongoDB connection', 'ext.MongoDb.EMongoDB');
@@ -220,17 +219,17 @@ class EMongoDB extends CApplicationComponent
 	}
 
 	/**
-	 * If we have don't use persist connection, close it
+	 * If we don't use persist connection, close it.
 	 * @since v1.0
 	 */
-	public function __destruct(){
-		if(!$this->persistentConnection){
+	public function __destruct()
+	{
+		if(!$this->persistentConnection)
 			$this->close();
-		}
 	}
 
 	/**
-	 * Drop the current DB
+	 * Drop the current DB.
 	 * @since v1.0
 	 */
 	public function dropDb()

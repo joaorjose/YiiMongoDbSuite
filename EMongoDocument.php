@@ -19,27 +19,42 @@
  */
 abstract class EMongoDocument extends EMongoEmbeddedDocument
 {
-	private $_new = false;  // whether this instance is new or not
-	private $_criteria = null;   // query criteria (used by finder only)
-
 	/**
-	 * Static array that holds mongo collection object instances,
-	 * protected access since v1.3
-	 * @var array $_collections static array of loaded collection objects
-	 * @since v1.3
+	 * @var mixed $_id MongoDB special field, every document needs to have this.
+	 * @since v1.0
 	 */
-	protected static $_collections = array();  // MongoCollection object
-	private static $_models = array();
-	private static $_indexes = array();  // Hold collection indexes array
-	private $_fsyncFlag = null;   // Object level FSync flag
-	private $_safeFlag = null;   // Object level Safe flag
-	protected $useCursor = null;   // Whatever to return cursor instead on raw array
+	public $_id;
 
 	/**
-	 * @var boolean $ensureIndexes whatever to check and create non existing indexes of collection
+	 * @var boolean $ensureIndexes Whatever to check and create non existing indexes of collection.
 	 * @since v1.1
 	 */
-	protected $ensureIndexes = true;   // Whatever to ensure indexes
+	protected $ensureIndexes = true;
+
+	/**
+	 * @var boolean $useCursor Whatever to return cursor instead on raw array.
+	 */
+	protected $useCursor = null;
+
+	/**
+	 * @var boolean Whether this instance is new or not.
+	 */
+	private $_new = false;
+
+	/**
+	 * @var EMongoCriteria boolean query criteria (used by finder only).
+	 */
+	private $_criteria = null;
+
+	/**
+	 * @var boolean Object level FSync flag.
+	 */
+	private $_fsyncFlag = null;
+
+	/**
+	 * @var boolean Object level Safe flag.
+	 */
+	private $_safeFlag = null;
 
 	/**
 	 * EMongoDB component static instance.
@@ -49,11 +64,12 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 	protected static $_emongoDb;
 
 	/**
-	 * MongoDB special field, every document has to have this.
-	 * @var mixed $_id
-	 * @since v1.0
+	 * @var array $_collections static array of loaded collection objects.
+	 * @since v1.3
 	 */
-	public $_id;
+	protected static $_collections = array();
+	private static $_models = array();
+	private static $_indexes = array();  // Hold collection indexes array
 
 	/**
 	 * Add scopes functionality.
@@ -273,7 +289,7 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 	}
 
 	/**
-	 * Get Safe flag
+	 * Get Safe flag.
 	 *
 	 * It will return the nearest not null value in order:
 	 * - Object level
@@ -291,7 +307,7 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 	}
 
 	/**
-	 * Set object level Safe flag
+	 * Set object level Safe flag.
 	 * @param boolean $flag true|false value for Safe flag
 	 */
 	public function setSafeFlag($flag)
@@ -300,7 +316,7 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 	}
 
 	/**
-	 * Get value of use cursor flag
+	 * Get value of use cursor flag.
 	 *
 	 * It will return the nearest not null value in order:
 	 * - Criteria level
@@ -321,8 +337,8 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 	}
 
 	/**
-	 * Set object level value of use cursor flag
-	 * @param boolean $useCursor true|false value for use cursor flag
+	 * Set object level value of use cursor flag.
+	 * @param boolean $useCursor true|false value for use cursor flag.
 	 */
 	public function setUseCursor($useCursor)
 	{
@@ -356,7 +372,7 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 	}
 
 	/**
-	 * This function check indexes and applies them to the collection if needed
+	 * This function check indexes and applies them to the collection if needed.
 	 * see CModel::init()
 	 *
 	 * @see EMongoEmbeddedDocument::init()
@@ -385,7 +401,7 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 	}
 
 	/**
-	 * This function may return array of indexes for this collection
+	 * This function may return array of indexes for this collection.
 	 * array syntax is:
 	 * return array(
 	 * 	'index_name'=>array('key'=>array('fieldName1'=>EMongoCriteria::SORT_ASC, 'fieldName2'=>EMongoCriteria::SORT_DESC),
