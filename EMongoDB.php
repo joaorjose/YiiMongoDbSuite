@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Ianaré Sévi
  * @author Dariusz Górecki <darek.krk@gmail.com>
@@ -27,7 +28,6 @@ class EMongoDB extends CApplicationComponent
 	 * @since v1.0
 	 */
 	public $connectionString;
-
 	/**
 	 * @var string replicaSet The name of the replica set to connect to. If this is given, the master will
 	 * be determined by using the ismaster database command on the seeds, so the driver may end up connecting
@@ -36,14 +36,12 @@ class EMongoDB extends CApplicationComponent
 	 * @since v1.3.7
 	 */
 	public $replicaSet = null;
-
 	/**
 	 * @var integer timeout For how long the driver should try to connect to the database (in milliseconds).
 	 * @example 2000
 	 * @since v1.3.7
 	 */
 	public $timeout = 2000;
-
 	/**
 	 * @var boolean $autoConnect whether the Mongo connection should be automatically established when
 	 * the component is being initialized. Defaults to true. Note, this property is only
@@ -51,29 +49,24 @@ class EMongoDB extends CApplicationComponent
 	 * @since v1.0
 	 */
 	public $autoConnect = true;
-
 	/**
 	 * @var mixed $persistentConnection False for non-persistent connection, string for persistent connection id to use.
 	 * @since v1.0
 	 */
 	public $persistentConnection = false;
-
 	/**
 	 * @var string $dbName name of the Mongo database to use.
 	 * @since v1.0
 	 */
 	public $dbName = null;
-
 	/**
 	 * @var MongoDB $_mongoDb instance of MongoDB driver.
 	 */
 	private $_mongoDb;
-
 	/**
 	 * @var Mongo $_mongoConnection instance of MongoDB driver.
 	 */
 	private $_mongoConnection;
-
 	/**
 	 * If set to TRUE all internal DB operations will use FSYNC flag with data modification requests,
 	 * in other words, all write operations will have to wait for a disc sync!
@@ -84,7 +77,6 @@ class EMongoDB extends CApplicationComponent
 	 * @since v1.0
 	 */
 	public $fsyncFlag = false;
-
 	/**
 	 * If set to TRUE all internal DB operations will use SAFE flag with data modification requests.
 	 *
@@ -97,7 +89,6 @@ class EMongoDB extends CApplicationComponent
 	 * @var boolean $safeFlag state of SAFE flag (global scope)
 	 */
 	public $safeFlag = false;
-
 	/**
 	 * If set to TRUE findAll* methods of models, will return {@see EMongoCursor} instead of
 	 * raw array of models.
@@ -111,7 +102,6 @@ class EMongoDB extends CApplicationComponent
 	 * @var boolean $useCursor state of Use Cursor flag (global scope).
 	 */
 	public $useCursor = false;
-
 	/**
 	 * Storage location for temporary files used by the GridFS Feature.
 	 * If set to null, component will not use temporary storage.
@@ -125,7 +115,7 @@ class EMongoDB extends CApplicationComponent
 	 */
 	public function connect()
 	{
-		if(!$this->getConnection()->connected)
+		if (!$this->getConnection()->connected)
 			return $this->getConnection()->connect();
 	}
 
@@ -137,34 +127,32 @@ class EMongoDB extends CApplicationComponent
 	 */
 	public function getConnection()
 	{
-		if($this->_mongoConnection === null)
+		if ($this->_mongoConnection === null)
 		{
 			try
 			{
 				Yii::trace('Opening MongoDB connection', 'ext.MongoDb.EMongoDB');
-				if(empty($this->connectionString))
+				if (empty($this->connectionString))
 					throw new EMongoException(Yii::t('yii', 'EMongoDB.connectionString cannot be empty.'));
 
-				$options = array( 'connect'=>$this->autoConnect );
+				$options = array('connect' => $this->autoConnect);
 
-				if($this->persistentConnection !== false)
+				if ($this->persistentConnection !== false)
 					$options['persist'] = $this->persistentConnection;
-				if( !is_null( $this->replicaSet ) )
+				if (!is_null($this->replicaSet))
 					$options['replicaSet'] = $this->replicaSet;
-				if( !is_null( $this->timeout ) )
+				if (!is_null($this->timeout))
 					$options['timeout'] = $this->timeout;
 
 				$this->_mongoConnection = new Mongo($this->connectionString, $options);
 
 				return $this->_mongoConnection;
 			}
-			catch(MongoConnectionException $e)
+			catch (MongoConnectionException $e)
 			{
 				throw new EMongoException(Yii::t(
-					'yii',
-					'EMongoDB failed to open connection: {error}',
-					array('{error}'=>$e->getMessage())
-				), $e->getCode());
+								'yii', 'EMongoDB failed to open connection: {error}', array('{error}' => $e->getMessage())
+						), $e->getCode());
 			}
 		}
 		else
@@ -187,7 +175,7 @@ class EMongoDB extends CApplicationComponent
 	 */
 	public function getDbInstance()
 	{
-		if($this->_mongoDb === null)
+		if ($this->_mongoDb === null)
 			return $this->_mongoDb = $this->getConnection()->selectDB($this->dbName);
 		else
 			return $this->_mongoDb;
@@ -210,10 +198,10 @@ class EMongoDB extends CApplicationComponent
 	 */
 	protected function close()
 	{
-		if($this->_mongoConnection!==null)
+		if ($this->_mongoConnection !== null)
 		{
 			$this->_mongoConnection->close();
-			$this->_mongoConnection=null;
+			$this->_mongoConnection = null;
 			Yii::trace('Closing MongoDB connection', 'ext.MongoDb.EMongoDB');
 		}
 	}
@@ -224,7 +212,7 @@ class EMongoDB extends CApplicationComponent
 	 */
 	public function __destruct()
 	{
-		if(!$this->persistentConnection)
+		if (!$this->persistentConnection)
 			$this->close();
 	}
 
@@ -236,4 +224,5 @@ class EMongoDB extends CApplicationComponent
 	{
 		$this->_mongoDb->drop();
 	}
+
 }
