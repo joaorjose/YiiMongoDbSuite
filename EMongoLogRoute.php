@@ -34,7 +34,6 @@
  * timestampType			: float or date					: default float
  * fsync					: fsync flag					: defalut false
  * safe						: safe flag						: defalut false
- * timeout					: timeout miliseconds			: defalut null i.e. MongoCursor::$timeout
  *
  */
 
@@ -94,10 +93,6 @@ class EMongoLogRoute extends CLogRoute
 	 */
 	public $safe = false;
 	/**
-	 * @var boolean If "safe" is set, this sets how long (in milliseconds) for the client to wait for a database response.
-	 */
-	public $timeout = null;
-	/**
 	 * @var array Insert options.
 	 */
 	private $_options;
@@ -133,11 +128,9 @@ class EMongoLogRoute extends CLogRoute
 
 		$this->setCollection($this->collectionName);
 		$this->_options = array(
-			'fsync' => $this->fsync
-			, 'safe' => $this->safe
+			'fsync' => $this->fsync,
+			'safe' => $this->safe
 		);
-		if (!is_null($this->timeout))
-			$this->_options['timeout'] = $this->timeout;
 	}
 
 	/**
@@ -151,8 +144,6 @@ class EMongoLogRoute extends CLogRoute
 			$timestamp = new MongoDate(round($timestamp));
 		else if ($this->timestampType === 'string')
 			$timestamp = date('Y-m-d H:i:s', $timestamp);
-		else
-			$timestamp = $timestamp;
 		return $timestamp;
 	}
 

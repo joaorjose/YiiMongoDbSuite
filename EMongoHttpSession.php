@@ -29,7 +29,6 @@
  * expireColumn			: expire column name			: default expire
  * fsync				: fsync flag					: default false
  * safe					: safe flag						: default false
- * timeout				: timeout miliseconds			: default null
  *
  */
 class EMongoHttpSession extends CHttpSession
@@ -62,10 +61,6 @@ class EMongoHttpSession extends CHttpSession
 	 * @var boolean the program will wait for the database response.
 	 */
 	public $safe = false;
-	/**
-	 * @var boolean if "safe" is set, this sets how long (in milliseconds) for the client to wait for a database response.
-	 */
-	public $timeout = null;
 	/**
 	 * @var array insert options
 	 */
@@ -103,8 +98,6 @@ class EMongoHttpSession extends CHttpSession
 			'fsync' => $this->fsync,
 			'safe' => $this->safe
 		);
-		if (!is_null($this->timeout))
-			$this->_options['timeout'] = $this->timeout;
 		parent::init();
 	}
 
