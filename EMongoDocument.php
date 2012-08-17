@@ -1362,4 +1362,14 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 		return $criteria;
 	}
 
+    /**
+	 * Checks whether this AR has the named attribute
+	 * @param string $name attribute name
+	 * @return boolean whether this AR has the named attribute (table column).
+	 */
+	public function hasAttribute($name)
+	{
+		return isset($this->$name);
+	}
+
 }
