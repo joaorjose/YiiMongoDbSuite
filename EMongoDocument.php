@@ -1280,7 +1280,7 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 
 		$this->setDbCriteria($criteria);
 
-		return new EMongoDocumentDataProvider($this);
+		return $this;
 	}
 
 	/**
