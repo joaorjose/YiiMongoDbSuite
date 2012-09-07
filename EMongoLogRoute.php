@@ -70,20 +70,6 @@ class EMongoLogRoute extends CLogRoute
 	 * @var string timestamp column name
 	 */
 	public $timestamp = 'timestamp';
-
-	/**
-	 * @var integer capped collection size
-	 */
-	//public $collectionSize = 10000;
-
-	/**
-	 * @var integer capped collection max
-	 */
-	//public $collectionMax = 100;
-	/**
-	 * @var boolean capped collection install flag
-	 */
-	//public $installCappedCollection = false;
 	/**
 	 * @var boolean Force the update to be synced to disk before returning success.
 	 */
@@ -95,11 +81,11 @@ class EMongoLogRoute extends CLogRoute
 	/**
 	 * @var array Insert options.
 	 */
-	private $_options;
+	protected $_options;
 	/**
 	 * @var MongoCollection Collection object used.
 	 */
-	private $_collection;
+	protected $_collection;
 
 	/**
 	 * Returns current MongoCollection object.
