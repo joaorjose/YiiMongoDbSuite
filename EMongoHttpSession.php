@@ -103,7 +103,7 @@ class EMongoHttpSession extends CHttpSession
 
 	protected function getData($id)
 	{
-		return $this->_collection->findOne(array($this->idColumn => $id), array($this->dataColumn));
+		return $this->_collection->findOne(array($this->idColumn => (string)$id), array($this->dataColumn));
 	}
 
 	protected function getExipireTime()

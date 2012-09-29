@@ -124,6 +124,7 @@ class EMongoDocumentDataProvider extends CDataProvider
 		if ($this->_sort === null)
 		{
 			$this->_sort = new EMongoSort;
+            $this->_sort->modelClass = $this->modelClass;
 			if (($id = $this->getId()) != '')
 				$this->_sort->sortVar = $id . '_sort';
 		}
@@ -145,7 +146,7 @@ class EMongoDocumentDataProvider extends CDataProvider
 			$this->_criteria->setOffset($pagination->getOffset());
 		}
 
-		/* if(($sort=$this->getSort())!==false && ($order=$sort->getOrderBy())!='')
+		/*if(($sort=$this->getSort())!==false && ($order=$sort->getOrderBy())!='')
 		  {
 		  $sort=array();
 		  foreach($this->getSortDirections($order) as $name=>$descending)

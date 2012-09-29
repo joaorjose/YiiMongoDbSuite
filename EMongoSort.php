@@ -33,7 +33,7 @@ class EMongoSort extends CSort
 		$order = $this->getOrderBy();
 		if (!empty($order))
 		{
-			$criteria->setSort($order);
+            $criteria->setSort($order);
 			// todo JOIN this new array properly with existing sort criteria - it just overwrites it now
 			//if(!empty($criteria->order))
 			//	$criteria->order.=', ';
@@ -113,7 +113,29 @@ class EMongoSort extends CSort
 	 */
 	public function resolveLabel($attribute)
 	{
-		// todo provide support for getAttributeLabel()
+		$definition=$this->resolveAttribute($attribute);
+		if(is_array($definition))
+		{
+			if(isset($definition['label']))
+				return $definition['label'];
+		}
+		else if(is_string($definition))
+			$attribute=$definition;
+
+		if($this->modelClass!==null)
+			return EMongoDocument::model($this->modelClass)->getAttributeLabel($attribute);
+		else
+			return $attribute;
+	}
+
+    /**
+	 * Returns the real definition of an attribute given its name.
+	 *
+	 * @param string $attribute the attribute name that the user requests to sort on
+	 * @return mixed the attribute name or the virtual attribute definition. False if the attribute cannot be sorted.
+	 */
+	public function resolveAttribute($attribute)
+	{
 		return $attribute;
 	}
 
@@ -196,16 +218,6 @@ class EMongoSort extends CSort
 		return $controller->createUrl($this->route, $params);
 	}
 
-	/**
-	 * Returns the real definition of an attribute given its name.
-	 *
-	 * @param string $attribute the attribute name that the user requests to sort on
-	 * @return mixed the attribute name or the virtual attribute definition. False if the attribute cannot be sorted.
-	 */
-	public function resolveAttribute($attribute)
-	{
-		// todo flesh this out more so it only works with valid sorting attributes
-		return $attribute;
-	}
+
 
 }

@@ -187,7 +187,7 @@ class EMongoCriteria extends CComponent
 		if (!empty($criteria->_offset))
 			$this->_offset = $criteria->_offset;
 		if (!empty($criteria->_sort))
-			$this->_sort = array_merge($this->_sort, $criteria->_sort);
+			$this->_sort = $criteria->_sort;
 		if (!empty($criteria->_select))
 			$this->_select = array_merge($this->_select, $criteria->_select);
 
