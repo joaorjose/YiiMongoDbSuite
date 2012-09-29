@@ -603,6 +603,9 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 				);
 			}
 
+			if($this->getMongoDBComponent()->enableProfiling)
+				Yii::beginProfile(get_class($this).'.insert('.json_encode($attributes).')','ext.MongoDb.EMongoDocument');
+
 			if (version_compare(Mongo::VERSION, '1.0.5', '>=') === true)
 				$result = $this->getCollection()->insert($rawData, array(
 					'fsync' => $this->getFsyncFlag(),
@@ -610,6 +613,9 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 						));
 			else
 				$result = $this->getCollection()->insert($rawData, CPropertyValue::ensureBoolean($this->getSafeFlag()));
+
+			if($this->getMongoDBComponent()->enableProfiling)
+				Yii::endProfile(get_class($this).'.insert('.json_encode($attributes).')','ext.MongoDb.EMongoDocument');
 
 			if ($result !== false)
 			{ // strict comparison needed
@@ -662,6 +668,10 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 			{
 				if (isset($rawData['_id']) === true)
 					unset($rawData['_id']);
+
+				if($this->getMongoDBComponent()->enableProfiling)
+					Yii::beginProfile(get_class($this).'.update('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+
 				$result = $this->getCollection()->update(
 						array('_id' => $this->_id), array('$set' => $rawData), array(
 					'fsync' => $this->getFsyncFlag(),
@@ -669,9 +679,16 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 					'multiple' => false
 						)
 				);
+
+				if($this->getMongoDBComponent()->enableProfiling)
+					Yii::endProfile(get_class($this).'.update('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+
 			}
 			else
 			{
+				if($this->getMongoDBComponent()->enableProfiling)
+					Yii::beginProfile(get_class($this).'.update('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+
 				if (version_compare(Mongo::VERSION, '1.0.5', '>=') === true)
 					$result = $this->getCollection()->save($rawData, array(
 						'fsync' => $this->getFsyncFlag(),
@@ -679,6 +696,10 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 							));
 				else
 					$result = $this->getCollection()->save($rawData);
+
+				if($this->getMongoDBComponent()->enableProfiling)
+					Yii::endProfile(get_class($this).'.update('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+
 			}
 			if ($result !== false)
 			{ // strict comparison needed
@@ -702,6 +723,9 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 		Yii::trace(get_class($this) . '.updateAll()', 'ext.MongoDb.EMongoDocument');
 		if ($modifier->canApply === true)
 		{
+			if($this->getMongoDBComponent()->enableProfiling)
+				Yii::beginProfile(get_class($this).'.updateAll('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+
 			$this->applyScopes($criteria);
 			if (version_compare(Mongo::VERSION, '1.0.5', '>=') === true)
 				$result = $this->getCollection()->update($criteria->getConditions(), $modifier->getModifiers(), array(
@@ -715,6 +739,10 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 					'upsert' => false,
 					'multiple' => true
 						));
+
+			if($this->getMongoDBComponent()->enableProfiling)
+				Yii::endProfile(get_class($this).'.updateAll('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+
 			return $result;
 		}
 		else
@@ -766,6 +794,9 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 		{
 			$this->applyScopes($criteria);
 			$criteria->mergeWith($this->createPkCriteria($pk));
+			
+			if($this->getMongoDBComponent()->enableProfiling)
+				Yii::beginProfile(get_class($this).'.deleteByPk('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
 
 			if (version_compare(Mongo::VERSION, '1.0.5', '>=') === true)
 				$result = $this->getCollection()->remove($criteria->getConditions(), array(
@@ -775,6 +806,9 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 						));
 			else
 				$result = $this->getCollection()->remove($criteria->getConditions(), true);
+			
+			if($this->getMongoDBComponent()->enableProfiling)
+				Yii::endProfile(get_class($this).'.deleteByPk('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
 
 			return $result;
 		}
@@ -814,7 +848,15 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 		if ($this->beforeFind())
 		{
 			$this->applyScopes($criteria);
+		
+			if($this->getMongoDBComponent()->enableProfiling)
+				Yii::beginProfile(get_class($this).'.find('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+		
 			$doc = $this->getCollection()->findOne($criteria->getConditions(), $criteria->getSelect());
+		
+			if($this->getMongoDBComponent()->enableProfiling)
+				Yii::endProfile(get_class($this).'.find('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+		
 			return $this->populateRecord($doc);
 		}
 		return null;
@@ -833,9 +875,12 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 
 		if ($this->beforeFind())
 		{
+			if($this->getMongoDBComponent()->enableProfiling)
+				Yii::beginProfile(get_class($this).'.findAll('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+			
 			$this->applyScopes($criteria);
 			$cursor = $this->getCollection()->find($criteria->getConditions());
-
+			
 			if ($criteria->getSort() !== null)
 				$cursor->sort($criteria->getSort());
 			if ($criteria->getLimit() !== null)
@@ -845,9 +890,14 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 			if ($criteria->getSelect())
 				$cursor->fields($criteria->getSelect(true));
 			if ($this->getUseCursor())
-				return new EMongoCursor($cursor, $this->model());
+				$result =  new EMongoCursor($cursor, $this->model());
 			else
-				return $this->populateRecords($cursor);
+				$result =  $this->populateRecords($cursor);
+
+			if($this->getMongoDBComponent()->enableProfiling)
+				Yii::endProfile(get_class($this).'.findAll('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+			
+			return $result;
 		}
 		return array();
 	}
@@ -867,7 +917,6 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 		Yii::trace(get_class($this) . '.findByPk()', 'ext.MongoDb.EMongoDocument');
 		$criteria = new EMongoCriteria($criteria);
 		$criteria->mergeWith($this->createPkCriteria($pk));
-
 		return $this->find($criteria);
 	}
 
@@ -939,7 +988,15 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 
 		$this->applyScopes($criteria);
 
-		return $this->getCollection()->count($criteria->getConditions());
+		if($this->getMongoDBComponent()->enableProfiling)
+			Yii::beginProfile(get_class($this).'.count('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+
+		$result = $this->getCollection()->count($criteria->getConditions());
+
+		if($this->getMongoDBComponent()->enableProfiling)
+			Yii::endProfile(get_class($this).'.count('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+
+		return $result;
 	}
 
 	/**
@@ -959,7 +1016,15 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 
 		$this->applyScopes($criteria);
 
-		return $this->getCollection()->count($criteria->getConditions());
+		if($this->getMongoDBComponent()->enableProfiling)
+			Yii::beginProfile(get_class($this).'.countByAttributes('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+
+		$result =  $this->getCollection()->count($criteria->getConditions());
+
+		if($this->getMongoDBComponent()->enableProfiling)
+			Yii::endProfile(get_class($this).'.countByAttributes('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+
+		return $result;
 	}
 
 	/**
@@ -987,14 +1052,22 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 		Yii::trace(get_class($this) . '.deleteAll()', 'ext.MongoDb.EMongoDocument');
 		$this->applyScopes($criteria);
 
+		if($this->getMongoDBComponent()->enableProfiling)
+			Yii::beginProfile(get_class($this).'.deleteAll('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+
 		if (version_compare(Mongo::VERSION, '1.0.5', '>=') === true)
-			return $this->getCollection()->remove($criteria->getConditions(), array(
+			$result =  $this->getCollection()->remove($criteria->getConditions(), array(
 						'justOne' => false,
 						'fsync' => $this->getFsyncFlag(),
 						'safe' => $this->getSafeFlag()
 					));
 		else
-			return $this->getCollection()->remove($criteria->getConditions(), false);
+			$result = $this->getCollection()->remove($criteria->getConditions(), false);
+
+		if($this->getMongoDBComponent()->enableProfiling)
+			Yii::endProfile(get_class($this).'.deleteAll('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+
+		return $result;
 	}
 
 	/**

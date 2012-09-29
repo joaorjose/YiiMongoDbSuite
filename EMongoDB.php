@@ -108,6 +108,11 @@ class EMongoDB extends CApplicationComponent
 	 * @var string $gridFStemporaryFolder
 	 */
 	public $gridFStemporaryFolder = null;
+	/**
+	 * If set to TRUE query profiling will be logged
+	 * @var boolean $enableProfiling
+	 */
+	public $enableProfiling = false;
 
 	/**
 	 * Connect to DB. If already connected do nothing.
@@ -223,6 +228,23 @@ class EMongoDB extends CApplicationComponent
 	public function dropDb()
 	{
 		$this->_mongoDb->drop();
+	}
+
+	/**
+	* Returns the statistical results of MongoDB executions.
+	* The results returned include the number of MongoDB statements executed and
+	* the total time spent.
+	* In order to use this method, {@link enableProfiling} has to be set true.
+	* @return array the first element indicates the number of MongoDB statements executed,
+	* and the second element the total time spent in MongoDB execution.
+	*/
+	public function getStats() 
+	{ 
+	    $logger=Yii::getLogger(); 
+	    $timings=$logger->getProfilingResults(null,'ext.MongoDb.EMongoDocument'); 
+	    $count=count($timings); 
+	    $time=array_sum($timings); 
+	    return array($count,$time); 
 	}
 
 }
