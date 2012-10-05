@@ -670,7 +670,7 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 					unset($rawData['_id']);
 
 				if($this->getMongoDBComponent()->enableProfiling)
-					Yii::beginProfile(get_class($this).'.update('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+					Yii::beginProfile(get_class($this).'.update('.json_encode($rawData).')','ext.MongoDb.EMongoDocument');
 
 				$result = $this->getCollection()->update(
 						array('_id' => $this->_id), array('$set' => $rawData), array(
@@ -681,13 +681,13 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 				);
 
 				if($this->getMongoDBComponent()->enableProfiling)
-					Yii::endProfile(get_class($this).'.update('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+					Yii::endProfile(get_class($this).'.update('.json_encode($rawData).')','ext.MongoDb.EMongoDocument');
 
 			}
 			else
 			{
 				if($this->getMongoDBComponent()->enableProfiling)
-					Yii::beginProfile(get_class($this).'.update('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+					Yii::beginProfile(get_class($this).'.update('.json_encode($rawData).')','ext.MongoDb.EMongoDocument');
 
 				if (version_compare(Mongo::VERSION, '1.0.5', '>=') === true)
 					$result = $this->getCollection()->save($rawData, array(
@@ -698,7 +698,7 @@ abstract class EMongoDocument extends EMongoEmbeddedDocument
 					$result = $this->getCollection()->save($rawData);
 
 				if($this->getMongoDBComponent()->enableProfiling)
-					Yii::endProfile(get_class($this).'.update('.json_encode($criteria->getConditions()).')','ext.MongoDb.EMongoDocument');
+					Yii::endProfile(get_class($this).'.update('.json_encode($rawData).')','ext.MongoDb.EMongoDocument');
 
 			}
 			if ($result !== false)
