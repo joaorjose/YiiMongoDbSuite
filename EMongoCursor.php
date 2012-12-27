@@ -18,7 +18,7 @@
  * but this one returns instantiated objects
  * @since v1.3.4
  */
-class EMongoCursor implements Iterator, Countable
+class EMongoCursor implements Iterator, Countable, ArrayAccess
 {
 	/**
 	 * @var MongoCursor $_cursor the MongoCursor returned by the query
