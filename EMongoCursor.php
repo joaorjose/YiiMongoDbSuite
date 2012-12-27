@@ -25,11 +25,17 @@ class EMongoCursor implements Iterator, Countable
 	 * @since v1.3.4
 	 */
 	protected $_cursor;
+
 	/**
 	 * @var EMongoDocument $_model the model used for instantiating objects
 	 * @since v1.3.4
 	 */
 	protected $_model;
+
+	/**
+	 * @var ArrayAccess container array
+	 */
+	protected $_array;
 
 	/**
 	 * Construct a new EMongoCursor
@@ -62,6 +68,7 @@ class EMongoCursor implements Iterator, Countable
 	 */
 	public function current()
 	{
+		$this->_cursor->next();
 		$document = $this->_cursor->current();
 		if (empty($document))
 			return $document;
@@ -112,11 +119,11 @@ class EMongoCursor implements Iterator, Countable
 	/**
 	 * Returns the number of documents found
 	 * {@see http://www.php.net/manual/en/mongocursor.count.php}
-	 * @param boolean $foundOnly default FALSE
+	 * @param boolean $foundOnly default TRUE
 	 * @return integer count of documents found
 	 * @since v1.3.4
 	 */
-	public function count($foundOnly = false)
+	public function count($foundOnly = true)
 	{
 		return $this->_cursor->count($foundOnly);
 	}
@@ -140,7 +147,7 @@ class EMongoCursor implements Iterator, Countable
 	 */
 	public function offset($offset)
 	{
-		$this->_cursor->offset($offset);
+		$this->_cursor->skip($offset);
 	}
 
 	/**
@@ -153,5 +160,58 @@ class EMongoCursor implements Iterator, Countable
 	{
 		$this->_cursor->sort($fields);
 	}
+	/**
+	 * Sets the element at the specified offset.
+	 * This method is required by the interface ArrayAccess.
+	 * @param integer $offset the offset to set element
+	 * @param mixed $item the element value
+	 */
+	public function offsetSet($offset, $document) 
+	{
+    	if (is_null($offset))
+        	$this->_array[] = $document;
+        else
+            $this->_array[$offset] = $document;
+    }
 
+	/**
+	 * Returns whether there is an element at the specified offset.
+	 * This method is required by the interface ArrayAccess.
+	 * @param mixed $offset the offset to check on
+	 * @return boolean
+	 */
+    public function offsetExists($offset) 
+    {
+    	if(!isset($this->_array)) 
+    	{
+    		foreach($this->_cursor as $document)
+    			$this->offsetSet(null,$this->_model->populateRecord($document));
+    	}
+
+    	if(isset($this->_array[$offset]))
+    		return true;
+    	else
+    		return false;
+    }
+
+	/**
+	 * Unsets the element at the specified offset.
+	 * This method is required by the interface ArrayAccess.
+	 * @param mixed $offset the offset to unset element
+	 */
+    public function offsetUnset($offset) 
+    {
+        unset($this->_array[$offset]);
+    }
+
+	/**
+	 * Returns the element at the specified offset.
+	 * This method is required by the interface ArrayAccess.
+	 * @param integer $offset the offset to retrieve element.
+	 * @return mixed the element at the offset, null if no element is found at the offset
+	 */
+    public function offsetGet($offset) 
+    {	
+    	return $this->offsetExists($offset)===true ? $this->_array[$offset] : null;
+    }
 }
