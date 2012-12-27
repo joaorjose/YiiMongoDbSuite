@@ -68,7 +68,6 @@ class EMongoCursor implements Iterator, Countable, ArrayAccess
 	 */
 	public function current()
 	{
-		$this->_cursor->next();
 		$document = $this->_cursor->current();
 		if (empty($document))
 			return $document;
