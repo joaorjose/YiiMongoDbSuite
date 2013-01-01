@@ -214,6 +214,7 @@ abstract class EMongoEmbeddedDocument extends CModel
 	 */
 	public function afterValidate()
 	{
+		parent::afterValidate();
 		if ($this->hasEmbeddedDocuments())
 			foreach ($this->_embedded as $doc)
 			{
