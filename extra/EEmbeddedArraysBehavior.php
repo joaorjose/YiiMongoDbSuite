@@ -120,7 +120,7 @@ class EEmbeddedArraysBehavior extends EMongoDocumentBehavior
 		parent::afterValidate($event);
 		foreach ($this->getOwner()->{$this->arrayPropertyName} as $doc)
 		{
-			if (!$doc->validate())
+			if ($doc instanceof EMongoEmbeddedDocument && !$doc->validate())
 				$this->getOwner()->addErrors($doc->getErrors());
 		}
 	}
@@ -133,7 +133,7 @@ class EEmbeddedArraysBehavior extends EMongoDocumentBehavior
 			$this->_cache = $this->getOwner()->{$this->arrayPropertyName};
 
 			foreach ($this->_cache as $doc)
-				$arrayOfDocs[] = $doc->toArray();
+				$arrayOfDocs[] = $doc instanceof EMongoEmbeddedDocument ? $doc->toArray() : $doc;
 
 			$this->getOwner()->{$this->arrayPropertyName} = $arrayOfDocs;
 			return true;
